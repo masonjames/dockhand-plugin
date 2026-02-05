@@ -8,6 +8,18 @@ description: Policy enforcement for safe infrastructure operations. Automaticall
 
 Enforce safety policies for infrastructure operations, preventing common mistakes and ensuring best practices across all Dockhand workflows.
 
+## Platform Domain Context
+
+**IMPORTANT**: When working with domains in ANY Dockhand operation, you MUST use the user's actual configured domain, never example placeholders.
+
+**How to discover the user's domain:**
+1. **Primary method**: Call `dns_list_records` - the zone shows their `platform_domain`
+2. **From apps**: Call `dokploy_list_apps` - app domains reveal the platform domain
+3. **From certs**: Call `traefik_check_certs` - shows active domains
+4. **Config location**: `~/.config/dockhand/config.json` contains `"platform_domain": "actual-domain.com"`
+
+Always substitute `<platform_domain>` placeholders with the discovered domain before executing DNS or domain-related operations.
+
 ## Core Rules
 
 1. **No secrets in git** - Never commit `.env` files, passwords, tokens, or API keys. Warn immediately if user attempts to stage sensitive files.

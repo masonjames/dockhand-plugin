@@ -40,10 +40,10 @@ Run `dokploy_sync_state` to export current state to git.
 ## Application Table Format
 
 ```
-| App           | Status  | Type    | Domain                  |
-|---------------|---------|---------|-------------------------|
-| ghost         | running | stack   | masonjames.com          |
-| client-portal | running | compose | portal.masonjames.com   |
+| App           | Status  | Type    | Domain                    |
+|---------------|---------|---------|---------------------------|
+| ghost         | running | stack   | <platform_domain>         |
+| client-portal | running | compose | portal.<platform_domain>  |
 ```
 
 ## Quick Actions

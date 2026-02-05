@@ -1,5 +1,5 @@
 {
-  "platform_domain": "example.com",
+  "platform_domain": "yourdomain.com",
   "hosts": [
     {
       "name": "platform-core",
@@ -18,7 +18,7 @@
     }
   ],
   "dokploy": {
-    "url": "https://platform-core.example.com",
+    "url": "https://dokploy.yourdomain.com",
     "token_env": "DOKPLOY_TOKEN"
   },
   "cloudflare": {
@@ -34,7 +34,7 @@
   },
   "monitoring": {
     "prometheus_url": "http://prometheus:9090",
-    "grafana_url": "https://grafana.platform-core.example.com"
+    "grafana_url": "https://grafana.yourdomain.com"
   },
   "dollie": {
     "api_url": "https://api.dollie.co",

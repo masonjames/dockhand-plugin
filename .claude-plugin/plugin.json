@@ -8,5 +8,6 @@
   },
   "repository": "https://github.com/masonjames/dockhand-plugin",
   "license": "MIT",
-  "keywords": ["infrastructure", "deployment", "dokploy", "hetzner", "traefik", "self-hosted"]
+  "keywords": ["infrastructure", "deployment", "dokploy", "hetzner", "traefik", "self-hosted"],
+  "hooks": "./hooks/hooks.json"
 }

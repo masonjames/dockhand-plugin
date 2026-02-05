@@ -46,5 +46,5 @@ ssh_exec "docker logs ghost --tail 500 | grep ERROR"
 ## Loki Integration
 
 For historical logs, suggest Grafana/Loki:
-- URL: grafana.platform-core.masonjames.com
+- URL: grafana.<platform_domain> (configured in your dockhand config)
 - Dashboard: real-time-logs

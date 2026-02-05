@@ -20,6 +20,13 @@ Initialize a newly provisioned server and add it to the platform.
 - SSH access configured via Tailscale
 - Host added to dockhand config
 
+## Security Note
+
+This bootstrap process uses `curl | sh` patterns for Docker and Tailscale installation. While these are official installation methods from trusted vendors, this approach has inherent supply-chain risks. For production environments, consider:
+- Downloading and verifying scripts before execution
+- Using package managers where available
+- Implementing your own verified installation scripts
+
 ## Bootstrap Sequence
 
 ### 1. Verify Connectivity

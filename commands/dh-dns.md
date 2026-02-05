@@ -16,6 +16,8 @@ argument-hint: "[list|create|update|delete|check] [domain]"
 
 Manage Cloudflare DNS records.
 
+**Note**: When creating/updating records, use the user's actual `platform_domain` from their config. Discover it via `dns_list_records` which shows their configured zone.
+
 ## Subcommands
 
 ### List Records
@@ -28,7 +30,7 @@ Run `dns_list_records type="<type>"`.
 
 ### Check Propagation
 ```
-/dh:dns check example.com
+/dh:dns check myapp.yourdomain.com
 ```
 Run `dns_check_propagation domain="<domain>"`.
 
@@ -60,7 +62,7 @@ Confirm deletion, run `dns_delete_record record_id=<id> confirmed=true`.
 
 ### Add App Domain
 ```
-dns_create_record type="CNAME" name="app" content="platform-core.masonjames.com" proxied=true confirmed=true
+dns_create_record type="CNAME" name="app" content="platform-core.<platform_domain>" proxied=true confirmed=true
 ```
 
 ### DNS Cutover

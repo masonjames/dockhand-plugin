@@ -11,6 +11,15 @@ description: Generate infrastructure status reports and health checks. Use when 
 
 Generate comprehensive status reports for your infrastructure. Provides quick health overviews and detailed reports across all managed hosts and services.
 
+## Configuration Context
+
+**IMPORTANT**: When displaying domains in reports, use actual domains from the user's infrastructure, NOT example placeholders. Discover domains by:
+1. Checking apps via `dokploy_list_apps` - returns actual configured domains
+2. Checking DNS via `dns_list_records` - shows the user's zone
+3. Checking certs via `traefik_check_certs` - reveals active domains
+
+The user's `platform_domain` config determines their primary domain.
+
 ## Quick Status (`/dh:status`)
 
 Perform a rapid health check:
@@ -60,16 +69,16 @@ Generated: <timestamp>
 | prod          | healthy | 8%  | 32%    | 41%  |
 
 ## Applications
-| App           | Status  | Replicas | Domain              |
-|---------------|---------|----------|---------------------|
-| ghost         | running | 1/1      | masonjames.com      |
-| client-portal | running | 1/1      | portal.masonjames.com |
+| App           | Status  | Replicas | Domain                   |
+|---------------|---------|----------|--------------------------|
+| ghost         | running | 1/1      | <platform_domain>        |
+| client-portal | running | 1/1      | portal.<platform_domain> |
 
 ## Certificates
-| Domain              | Expires    | Days Left |
-|---------------------|------------|-----------|
-| masonjames.com      | 2024-06-15 | 45        |
-| portal.masonjames.com | 2024-06-15 | 45      |
+| Domain                   | Expires    | Days Left |
+|--------------------------|------------|-----------|
+| <platform_domain>        | 2024-06-15 | 45        |
+| portal.<platform_domain> | 2024-06-15 | 45        |
 
 ## DNS Records (summary)
 - A records: 12

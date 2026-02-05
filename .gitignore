@@ -47,6 +47,8 @@ htmlcov/
 # Local configuration (contains secrets)
 .mcp.json
 dockhand.config.json
+.env.dockhand
+*.env.local
 
 # Build artifacts
 *.whl

@@ -11,6 +11,15 @@ description: Guide deployment workflows for applications. Use when user wants to
 
 Guide users through deployment workflows for self-hosted applications. Supports template-based deployments (364+ open-source apps) and traditional WordPress/Ghost deployments.
 
+## Configuration Context
+
+**IMPORTANT**: When creating DNS records or referencing domains, use the user's configured `platform_domain`, NOT example placeholders. Discover it by:
+1. Checking existing DNS records via `dns_list_records`
+2. Checking existing apps via `dokploy_list_apps`
+3. The user's config contains `platform_domain` (e.g., `mycompany.com`)
+
+Replace `<platform_domain>` in examples below with the user's actual domain.
+
 ## Deployment Patterns
 
 ### 1. Template Deployment (Recommended)
@@ -31,7 +40,7 @@ dokploy_list_templates category="databases"
   → User selects "postgresql"
 dokploy_deploy_template template_id="postgresql" app_name="my-postgres" env_vars={...}
   → Returns app_id
-dns_create_record type="CNAME" name="db" content="platform-core.masonjames.com"
+dns_create_record type="CNAME" name="db" content="platform-core.<your_domain>"
   → Traefik auto-routes
 ```
 

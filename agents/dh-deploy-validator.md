@@ -4,7 +4,7 @@ description: Use this agent to verify deployment success after applications are 
 
 <example>
 Context: User just deployed an application using /dh:deploy
-user: "Deploy ghost to blog.example.com"
+user: "Deploy ghost to blog.mysite.com"
 assistant: "[Runs deployment] Now let me validate the deployment..."
 assistant: "[Triggers dh-deploy-validator agent to verify]"
 <commentary>

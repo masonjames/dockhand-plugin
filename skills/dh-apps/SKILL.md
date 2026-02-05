@@ -10,6 +10,15 @@ description: Day-to-day application lifecycle management. Use when user wants to
 
 Manage day-to-day application lifecycle operations. List apps, check status, manage domains, and perform lifecycle actions.
 
+## Configuration Context
+
+**IMPORTANT**: When working with domains, always use the user's configured `platform_domain` from their dockhand config, NOT example placeholders. To discover the user's domain:
+1. Check existing DNS records via `dns_list_records` - domains will show the actual configured zone
+2. Check existing apps via `dokploy_list_apps` - app domains reveal the platform domain
+3. The user's config at `~/.config/dockhand/config.json` contains `platform_domain`
+
+Replace `<platform_domain>` in examples below with the user's actual domain (e.g., `mycompany.com`).
+
 ## Application Overview
 
 List all managed applications:
@@ -24,12 +33,12 @@ Output format:
 ```
 ## Applications
 
-| App           | Status  | Type      | Domain                  |
-|---------------|---------|-----------|-------------------------|
-| ghost         | running | stack     | masonjames.com          |
-| client-portal | running | compose   | portal.masonjames.com   |
-| wordpress     | running | stack     | avenue941.com           |
-| cal-com       | stopped | compose   | cal.masonjames.com      |
+| App           | Status  | Type      | Domain                    |
+|---------------|---------|-----------|---------------------------|
+| ghost         | running | stack     | <platform_domain>         |
+| client-portal | running | compose   | portal.<platform_domain>  |
+| wordpress     | running | stack     | client-site.com           |
+| cal-com       | stopped | compose   | cal.<platform_domain>     |
 ```
 
 ## Application Status
@@ -82,25 +91,25 @@ dns_list_records type="A"
 
 1. Create DNS record:
    ```
-   dns_create_record type="CNAME" name="new-app" content="platform-core.masonjames.com" confirmed=true
+   dns_create_record type="CNAME" name="new-app" content="platform-core.<your_domain>" confirmed=true
    ```
 
 2. Add domain in Dokploy UI
 
 3. Verify propagation:
    ```
-   dns_check_propagation domain="new-app.masonjames.com"
+   dns_check_propagation domain="new-app.<your_domain>"
    ```
 
 4. Check certificate:
    ```
-   traefik_check_certs domain="new-app.masonjames.com"
+   traefik_check_certs domain="new-app.<your_domain>"
    ```
 
 ### Update Domain
 
 ```
-dns_update_record record_id="<id>" content="new-target.masonjames.com" confirmed=true
+dns_update_record record_id="<id>" content="new-target.<your_domain>" confirmed=true
 ```
 
 ### Remove Domain
