@@ -4,15 +4,18 @@
  * Pre-tool-use policy hook for Dockhand.
  *
  * Security posture: FAIL-CLOSED
- * - Parse errors → block (deny)
- * - Unknown errors → block (deny)
+ * - Parse errors → deny
+ * - Unknown errors → deny
  * - Only explicitly allowed operations pass
  *
  * Enforces:
  * - Blocks destructive Bash commands on protected branches
  * - Requires `confirmed=true` for destructive MCP operations on protected branches
  *
- * Hook contract: receives JSON on stdin, outputs JSON decision on stdout.
+ * Hook contract:
+ * - Receives JSON on stdin with tool_name and tool_input
+ * - Outputs JSON with hookSpecificOutput.permissionDecision ("allow", "deny", "ask")
+ * - Exit 0 for allow, Exit 2 for deny (with output to stderr)
  */
 
 const { execSync } = require("child_process");
@@ -46,6 +49,25 @@ const DESTRUCTIVE_SSH_PATTERNS = [
   /rm\s+-rf/i,
 ];
 
+/**
+ * Create an allow response
+ */
+function allow() {
+  return {
+    hookSpecificOutput: { permissionDecision: "allow" },
+  };
+}
+
+/**
+ * Create a deny response with reason
+ */
+function deny(reason) {
+  return {
+    hookSpecificOutput: { permissionDecision: "deny" },
+    systemMessage: reason,
+  };
+}
+
 function getCurrentBranch() {
   try {
     return execSync("git rev-parse --abbrev-ref HEAD", {
@@ -65,38 +87,36 @@ function isOnProtectedBranch() {
 
 function checkBashPolicy(command) {
   if (!isOnProtectedBranch()) {
-    return { decision: "allow" };
+    return allow();
   }
 
   // Check for always-blocked patterns
   for (const pattern of BLOCKED_BASH_PATTERNS) {
     if (pattern.test(command)) {
-      return {
-        decision: "block",
-        reason: `Blocked: Destructive command pattern detected on protected branch. Create a feature branch first.`,
-      };
+      return deny(
+        `Blocked: Destructive command pattern detected on protected branch. Create a feature branch first.`
+      );
     }
   }
 
   // Block terraform apply -auto-approve on protected branches
   if (/terraform\s+apply/i.test(command) && command.includes("-auto-approve")) {
-    return {
-      decision: "block",
-      reason: `Blocked: terraform apply -auto-approve on protected branch. Use interactive mode or create a feature branch.`,
-    };
+    return deny(
+      `Blocked: terraform apply -auto-approve on protected branch. Use interactive mode or create a feature branch.`
+    );
   }
 
-  return { decision: "allow" };
+  return allow();
 }
 
 function checkMcpPolicy(toolName, toolInput) {
   if (!isOnProtectedBranch()) {
-    return { decision: "allow" };
+    return allow();
   }
 
   // Only check tools in our destructive list
   if (!DESTRUCTIVE_MCP_TOOLS.includes(toolName)) {
-    return { decision: "allow" };
+    return allow();
   }
 
   // For SSH tools, check if the command itself is destructive
@@ -105,23 +125,17 @@ function checkMcpPolicy(toolName, toolInput) {
     const isDestructive = DESTRUCTIVE_SSH_PATTERNS.some((p) => p.test(command));
 
     if (isDestructive && toolInput.confirmed !== true) {
-      return {
-        decision: "block",
-        reason: `Blocked: Destructive SSH command on protected branch requires confirmed=true.`,
-      };
+      return deny(`Blocked: Destructive SSH command on protected branch requires confirmed=true.`);
     }
-    return { decision: "allow" };
+    return allow();
   }
 
   // For other destructive MCP tools, require confirmed=true
   if (toolInput.confirmed !== true) {
-    return {
-      decision: "block",
-      reason: `Blocked: ${toolName} on protected branch requires confirmed=true.`,
-    };
+    return deny(`Blocked: ${toolName} on protected branch requires confirmed=true.`);
   }
 
-  return { decision: "allow" };
+  return allow();
 }
 
 function checkPolicy(toolName, toolInput) {
@@ -136,27 +150,25 @@ function checkPolicy(toolName, toolInput) {
   }
 
   // Unknown tools pass through (server-side will enforce its own policies)
-  return { decision: "allow" };
+  return allow();
 }
 
-// Hook contract: read JSON from stdin, output JSON decision on stdout
+// Hook contract: read JSON from stdin, output JSON decision
 let input = "";
 process.stdin.setEncoding("utf8");
 process.stdin.on("data", (chunk) => {
   input += chunk;
 });
+
 process.stdin.on("end", () => {
   try {
     const hookInput = JSON.parse(input);
 
     if (!hookInput || typeof hookInput !== "object") {
       // Invalid input structure - fail closed
-      console.log(
-        JSON.stringify({
-          decision: "block",
-          reason: "Hook error: Invalid input structure. Blocking for safety.",
-        })
-      );
+      const result = deny("Hook error: Invalid input structure. Blocking for safety.");
+      console.error(JSON.stringify(result));
+      process.exit(2);
       return;
     }
 
@@ -164,24 +176,27 @@ process.stdin.on("end", () => {
     const toolInput = hookInput.tool_input || {};
 
     const result = checkPolicy(toolName, toolInput);
-    console.log(JSON.stringify(result));
+
+    // Allow: exit 0 with stdout
+    // Deny: exit 2 with stderr
+    if (result.hookSpecificOutput.permissionDecision === "allow") {
+      console.log(JSON.stringify(result));
+      process.exit(0);
+    } else {
+      console.error(JSON.stringify(result));
+      process.exit(2);
+    }
   } catch (err) {
     // Parse error - fail closed
-    console.log(
-      JSON.stringify({
-        decision: "block",
-        reason: `Hook error: ${err.message || "Unknown error"}. Blocking for safety.`,
-      })
-    );
+    const result = deny(`Hook error: ${err.message || "Unknown error"}. Blocking for safety.`);
+    console.error(JSON.stringify(result));
+    process.exit(2);
   }
 });
 
 // Handle stdin errors
 process.stdin.on("error", (err) => {
-  console.log(
-    JSON.stringify({
-      decision: "block",
-      reason: `Hook stdin error: ${err.message}. Blocking for safety.`,
-    })
-  );
+  const result = deny(`Hook stdin error: ${err.message}. Blocking for safety.`);
+  console.error(JSON.stringify(result));
+  process.exit(2);
 });
