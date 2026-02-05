@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "dockhand": {
+      "command": "bash",
+      "args": [
+        "-c",
+        "set -e; if ! command -v op &>/dev/null; then echo 'ERROR: 1Password CLI (op) not found. Install from https://1password.com/downloads/command-line/' >&2; exit 1; fi; if ! op account get &>/dev/null; then echo 'ERROR: 1Password CLI not authenticated. Run: eval $(op signin)' >&2; exit 1; fi; export CLOUDFLARE_API_TOKEN=$(op item get YOUR_CLOUDFLARE_ITEM --vault 'YOUR_VAULT_NAME' --fields api_token --reveal) || { echo 'ERROR: Failed to get Cloudflare token' >&2; exit 1; }; export DOKPLOY_TOKEN=$(op item get YOUR_DOKPLOY_ITEM --vault 'YOUR_VAULT_NAME' --fields 'API Key' --reveal) || { echo 'ERROR: Failed to get Dokploy token' >&2; exit 1; }; dockhand-plugin"
+      ],
+      "env": {
+        "DOCKHAND_CONFIG": "${HOME}/.config/dockhand/config.json"
+      }
+    }
+  }
+}

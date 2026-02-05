@@ -1,0 +1,18 @@
+{
+  "name": "dockhand-marketplace",
+  "owner": {
+    "name": "Mason James"
+  },
+  "plugins": [
+    {
+      "name": "dockhand",
+      "source": "./",
+      "description": "Infrastructure management plugin for Claude Code - Deploy, manage, and troubleshoot self-hosted apps on Hetzner, Dokploy, and Traefik",
+      "keywords": ["infrastructure", "deployment", "dokploy", "hetzner", "traefik", "self-hosted"]
+    }
+  ],
+  "metadata": {
+    "description": "Marketplace for the Dockhand infrastructure management plugin",
+    "version": "0.2.0"
+  }
+}

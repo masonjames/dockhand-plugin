@@ -1,0 +1,51 @@
+{
+  "platform_domain": "example.com",
+  "hosts": [
+    {
+      "name": "platform-core",
+      "ssh_target": "root@platform-core",
+      "role": "manager"
+    },
+    {
+      "name": "prod",
+      "ssh_target": "root@prod",
+      "role": "worker"
+    },
+    {
+      "name": "test",
+      "ssh_target": "root@test",
+      "role": "worker"
+    }
+  ],
+  "dokploy": {
+    "url": "https://platform-core.example.com",
+    "token_env": "DOKPLOY_TOKEN"
+  },
+  "cloudflare": {
+    "zone_id": "your-cloudflare-zone-id",
+    "token_env": "CLOUDFLARE_API_TOKEN"
+  },
+  "onepassword": {
+    "vault_name": "Platform Infra"
+  },
+  "backup": {
+    "s3_endpoint": "https://your-account.r2.cloudflarestorage.com",
+    "s3_bucket": "platform-backups"
+  },
+  "monitoring": {
+    "prometheus_url": "http://prometheus:9090",
+    "grafana_url": "https://grafana.platform-core.example.com"
+  },
+  "dollie": {
+    "api_url": "https://api.dollie.co",
+    "api_key_env": "DOLLIE_API_KEY",
+    "default_agent": "wordpress-agent",
+    "mcp_transport": "http",
+    "agent_map": {
+      "wordpress": "wordpress-agent",
+      "ghost": "wordpress-agent",
+      "twenty-crm": "app-deploy-agent"
+    }
+  },
+  "infra_repo_path": "/path/to/your/dockyard-repo"
+}

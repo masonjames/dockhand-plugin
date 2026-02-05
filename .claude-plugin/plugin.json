@@ -1,0 +1,12 @@
+{
+  "name": "dockhand",
+  "version": "0.2.0",
+  "description": "Infrastructure management plugin for Claude Code - Deploy, manage, and troubleshoot self-hosted apps on Hetzner, Dokploy, and Traefik",
+  "author": {
+    "name": "Mason James",
+    "url": "https://masonjames.com"
+  },
+  "repository": "https://github.com/masonjames/dockhand-plugin",
+  "license": "MIT",
+  "keywords": ["infrastructure", "deployment", "dokploy", "hetzner", "traefik", "self-hosted"]
+}

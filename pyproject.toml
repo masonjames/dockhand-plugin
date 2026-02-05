@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dockhand-plugin"
+version = "0.2.0"
+description = "Claude Code plugin for managing self-hosted infrastructure (Hetzner + Dokploy + Traefik)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [
+  { name = "Mason James" },
+]
+keywords = ["claude-code", "mcp", "infrastructure", "devops", "dokploy", "traefik"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: System :: Systems Administration",
+]
+dependencies = [
+  "dockhand>=0.2.0",
+]
+
+[project.scripts]
+dockhand-plugin = "dockhand_plugin.server:main"
+
+[project.urls]
+Homepage = "https://github.com/masonjames/dockhand-plugin"
+Repository = "https://github.com/masonjames/dockhand-plugin"
+Issues = "https://github.com/masonjames/dockhand-plugin/issues"
+Documentation = "https://github.com/masonjames/dockhand-plugin#readme"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dockhand_plugin"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "W"]
