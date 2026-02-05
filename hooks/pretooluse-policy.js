@@ -54,7 +54,10 @@ const DESTRUCTIVE_SSH_PATTERNS = [
  */
 function allow() {
   return {
-    hookSpecificOutput: { permissionDecision: "allow" },
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "allow",
+    },
   };
 }
 
@@ -63,8 +66,11 @@ function allow() {
  */
 function deny(reason) {
   return {
-    hookSpecificOutput: { permissionDecision: "deny" },
-    systemMessage: reason,
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: reason,
+    },
   };
 }
 
@@ -153,6 +159,21 @@ function checkPolicy(toolName, toolInput) {
   return allow();
 }
 
+/**
+ * Write to stdout and exit cleanly (waits for flush)
+ */
+function outputAndExit(stream, json, exitCode) {
+  const data = JSON.stringify(json) + "\n";
+  const canContinue = stream.write(data);
+  if (canContinue) {
+    process.exitCode = exitCode;
+  } else {
+    stream.once("drain", () => {
+      process.exitCode = exitCode;
+    });
+  }
+}
+
 // Hook contract: read JSON from stdin, output JSON decision
 let input = "";
 process.stdin.setEncoding("utf8");
@@ -165,10 +186,7 @@ process.stdin.on("end", () => {
     const hookInput = JSON.parse(input);
 
     if (!hookInput || typeof hookInput !== "object") {
-      // Invalid input structure - fail closed
-      const result = deny("Hook error: Invalid input structure. Blocking for safety.");
-      console.error(JSON.stringify(result));
-      process.exit(2);
+      outputAndExit(process.stderr, deny("Invalid input structure."), 2);
       return;
     }
 
@@ -177,26 +195,24 @@ process.stdin.on("end", () => {
 
     const result = checkPolicy(toolName, toolInput);
 
-    // Allow: exit 0 with stdout
-    // Deny: exit 2 with stderr
     if (result.hookSpecificOutput.permissionDecision === "allow") {
-      console.log(JSON.stringify(result));
-      process.exit(0);
+      outputAndExit(process.stdout, result, 0);
     } else {
-      console.error(JSON.stringify(result));
-      process.exit(2);
+      outputAndExit(process.stderr, result, 2);
     }
   } catch (err) {
-    // Parse error - fail closed
-    const result = deny(`Hook error: ${err.message || "Unknown error"}. Blocking for safety.`);
-    console.error(JSON.stringify(result));
-    process.exit(2);
+    outputAndExit(
+      process.stderr,
+      deny(`Parse error: ${err.message || "Unknown"}`),
+      2
+    );
   }
 });
 
-// Handle stdin errors
 process.stdin.on("error", (err) => {
-  const result = deny(`Hook stdin error: ${err.message}. Blocking for safety.`);
-  console.error(JSON.stringify(result));
-  process.exit(2);
+  outputAndExit(
+    process.stderr,
+    deny(`Stdin error: ${err.message}`),
+    2
+  );
 });

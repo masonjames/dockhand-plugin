@@ -60,12 +60,20 @@ Intervene when user requests:
 - Require `confirmed=true` for state-changing MCP tools
 - Log audit trail for infrastructure changes via `notify_send` if configured
 
-## Integration with MCP Tools
+## Mode-Aware Enforcement
 
-These Dockhand tools enforce guardrails server-side:
+### Admin Mode
+Full guardrail enforcement via both plugin hooks and MCP server:
 - `terraform_apply` - Requires `confirmed=true`
 - `dokploy_redeploy` - Requires `confirmed=true`
 - `dns_create_record`, `dns_update_record`, `dns_delete_record` - Require `confirmed=true`
 - `ssh_exec` - Blocks destructive commands without confirmation
+
+### Client Portal Mode
+Server-side enforcement only. The remote MCP server scopes access based on the user's portal token:
+- Users can only access apps assigned to their account
+- Destructive operations require server-side approval
+- No direct SSH, Terraform, or raw infrastructure access
+- The plugin hooks allow all `dockyard_*` tool calls through (server enforces permissions)
 
 This skill provides the policy layer; MCP tools provide enforcement.
