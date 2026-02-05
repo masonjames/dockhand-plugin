@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\"",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh",
             "timeout": 5000
           }
         ]
@@ -18,77 +18,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js\"",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js",
             "timeout": 5000
           }
         ]
       },
       {
-        "matcher": "mcp__dockhand__ssh_exec",
+        "matcher": "mcp__dockhand__.*",
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js\"",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__dockhand__ssh_script",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js\"",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__dockhand__terraform_apply",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js\"",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__dockhand__dokploy_redeploy",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js\"",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__dockhand__dns_create_record",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js\"",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__dockhand__dns_update_record",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js\"",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__dockhand__dns_delete_record",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js\"",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/pretooluse-policy.js",
             "timeout": 5000
           }
         ]
